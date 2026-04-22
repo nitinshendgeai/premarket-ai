@@ -1,14 +1,18 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from api.routes import router
-import uvicorn
 
-app = FastAPI(
-    title="Pre-Market Trading Assistant",
-    version="2.0.0",
-)
+app = FastAPI(title="Pre-Market Trading Assistant", version="2.0.0")
 
-# CORS — allow all origins (credentials must be False with wildcard)
+@app.middleware("http")
+async def add_cors_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,11 +25,8 @@ app.include_router(router, prefix="")
 
 @app.get("/")
 def root():
-    return {"status": "running", "service": "Pre-Market Trading Assistant v2"}
+    return {"status": "running"}
 
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "version": "2.0.0"}
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
