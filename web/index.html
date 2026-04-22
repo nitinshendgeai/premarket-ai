@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pre-Market AI</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#060B18;--s:#0D1526;--s2:#111E35;--b:#1A2B47;--bull:#00D4A0;--bear:#FF4757;--side:#FFB300;--acc:#4D8AF0;--t1:#E2EAF8;--t2:#6B89B4;--t3:#3A5070;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t1);font-family:'IBM Plex Mono',monospace;min-height:100vh;}
+.app{max-width:480px;margin:0 auto;}
+.hdr{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--b);position:sticky;top:0;background:var(--bg);z-index:99;}
+.logo{width:36px;height:36px;background:rgba(77,138,240,.15);border:1px solid rgba(77,138,240,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.ht{flex:1}.hs{font-size:9px;letter-spacing:3px;color:var(--acc);font-weight:600;}
+.hti{font-size:15px;font-weight:700;}
+.hr{text-align:right;margin-right:8px;}
+.hrl{font-size:8px;letter-spacing:1px;color:var(--t3);}
+.hrt{font-size:11px;color:var(--t2);}
+.rbtn{background:none;border:1px solid var(--b);border-radius:8px;color:var(--acc);width:34px;height:34px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+.rbtn:disabled{opacity:.4;}
+.spin{animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.pad{padding:16px;display:flex;flex-direction:column;gap:10px;}
+.card{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:20px;}
+.sl{font-size:9px;letter-spacing:2.5px;color:var(--t2);font-weight:600;text-transform:uppercase;margin-bottom:14px;display:block;}
+.ticker{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.ticker::-webkit-scrollbar{display:none;}
+.tick{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:8px 14px;flex-shrink:0;min-width:88px;}
+.tl{font-size:8px;letter-spacing:1.5px;color:var(--t3);}
+.tr{display:flex;align-items:baseline;gap:5px;margin-top:3px;}
+.tp{font-size:13px;font-weight:600;}
+.bias{padding:24px;border-radius:18px;border:1.5px solid;}
+.bh{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.bi{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.bm{font-size:10px;letter-spacing:2.5px;color:var(--t2);font-weight:600;}
+.bl{font-size:46px;font-weight:700;letter-spacing:2px;line-height:1;margin-bottom:8px;}
+.bt2{font-size:11px;line-height:1.6;margin-bottom:20px;}
+.cr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.cl{font-size:9px;letter-spacing:1.5px;color:var(--t3);}
+.cv{font-size:18px;font-weight:700;}
+.ct{height:6px;background:var(--b);border-radius:4px;overflow:hidden;}
+.cf{height:100%;border-radius:4px;transition:width 1s ease;width:0%;}
+.row{display:flex;gap:10px;margin-bottom:10px;}
+.row .ib{flex:1;}
+.ib{background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:12px 14px;}
+.il{font-size:9px;letter-spacing:1.5px;color:var(--t3);margin-bottom:5px;}
+.iv{font-size:14px;font-weight:700;}
+.rc{flex:1;border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+.adv{background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:12px;font-size:10px;color:var(--t2);line-height:1.7;margin-top:10px;}
+hr{border:none;border-top:1px solid var(--b);margin:14px 0;}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sc2{border-radius:8px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border:1px solid;}
+.sn{font-size:9px;color:var(--t2);}
+.stk{height:10px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:10px;}
+.ss{height:100%;}
+.sleg{display:flex;justify-content:space-between;}
+.sl2{display:flex;align-items:center;gap:6px;font-size:9px;color:var(--t2);}
+.sd{width:8px;height:8px;border-radius:2px;}
+.rb2{background:rgba(77,138,240,.05);border:1px solid rgba(77,138,240,.18);border-radius:10px;padding:14px;font-size:11px;line-height:1.7;margin-bottom:16px;}
+.hl{display:flex;flex-direction:column;gap:10px;}
+.hli{display:flex;gap:10px;align-items:flex-start;}
+.hd{width:4px;height:4px;background:var(--acc);border-radius:50%;margin-top:6px;flex-shrink:0;}
+.ht2{font-size:11px;color:var(--t2);line-height:1.55;}
+.disc{background:rgba(255,179,0,.04);border:1px solid rgba(255,179,0,.12);border-radius:10px;padding:14px;font-size:9px;color:var(--t3);line-height:1.7;text-align:center;}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:65vh;gap:16px;padding:24px;}
+.spinner{width:40px;height:40px;border:2px solid var(--b);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite;}
+.ltxt{font-size:13px;color:var(--t2);}
+.lsub{font-size:9px;letter-spacing:1.5px;color:var(--t3);margin-top:4px;text-align:center;}
+.emsg{background:var(--s);border:1px solid var(--b);border-radius:10px;padding:16px;font-size:11px;color:var(--t2);line-height:1.7;text-align:center;max-width:340px;}
+.rbt{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:14px 32px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="logo">📊</div>
+    <div class="ht"><div class="hs">PRE-MARKET AI</div><div class="hti">Indian Options Assistant</div></div>
+    <div class="hr"><div class="hrl">LAST UPDATE</div><div class="hrt" id="T">--:--:--</div></div>
+    <button class="rbtn" id="RB" onclick="go()">↻</button>
+  </div>
+  <div class="pad" id="ROOT">
+    <div class="center">
+      <div class="spinner"></div>
+      <div class="ltxt">Fetching live market data…</div>
+      <div class="lsub">NIFTY · BANK NIFTY · VIX · GLOBAL · NEWS</div>
+    </div>
+  </div>
+</div>
+<script>
+// Uses Netlify serverless function — no CORS issues!
+const API = '/.netlify/functions/analysis';
+
+function bc(b){return{bullish:'#00D4A0',bearish:'#FF4757'}[b]||'#FFB300';}
+function bbg(b){return{bullish:'#001F18',bearish:'#1F0610'}[b]||'#1F1600';}
+function be(b){return{bullish:'📈',bearish:'📉'}[b]||'➡️';}
+function bt(b){return b==='bullish'?'Markets UP — Buy Call options':b==='bearish'?'Markets DOWN — Buy Put options':'No clear direction — Stay out';}
+function sc(v){const s=(v||'').toLowerCase();if(['positive','bullish','strong','low','stable'].some(p=>s.includes(p)))return'#00D4A0';if(['negative','bearish','weak','high','pressure'].some(p=>s.includes(p)))return'#FF4757';return'#FFB300';}
+function setLoad(on){const rb=document.getElementById('RB');rb.disabled=on;on?rb.classList.add('spin'):rb.classList.remove('spin');}
+
+function render(d){
+  const n=new Date();
+  document.getElementById('T').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');
+  const bias=d.bias||'sideways',color=bc(bias),f=d.features||{},risk=d.risk||{},sb=d.score_buckets||{};
+  const bull=sb.bullish||0,bear=sb.bearish||0,side=sb.sideways||0;
+  const st=d.strategy||'Avoid',sc2=st.includes('CE')?'#00D4A0':st.includes('PE')?'#FF4757':'#FFB300';
+  const ticks=[['NIFTY',d.raw_market?.nifty],['BNIFTY',d.raw_market?.bank_nifty],['VIX',d.raw_market?.india_vix],['S&P500',d.raw_market?.sp500],['NASDAQ',d.raw_market?.nasdaq]]
+    .filter(([,t])=>t?.close!=null)
+    .map(([l,t])=>{const p=t.pct_change||0,c=p>=0?'#00D4A0':'#FF4757';return`<div class="tick"><div class="tl">${l}</div><div class="tr"><span class="tp">${t.close.toFixed(2)}</span><span style="font-size:10px;color:${c}">${p>=0?'+':''}${p.toFixed(2)}%</span></div></div>`;}).join('');
+  const sigs=[['GLOBAL',f.global_sentiment],['GIFT NIFTY',f.gift_nifty_trend],['BANKING',f.bank_strength],['NIFTY 50',f.nifty_strength],['IT/NASDAQ',f.it_strength],['VOLATILITY',f.volatility],['NEWS',f.news_sentiment],['RUPEE',f.rupee_pressure?'PRESSURE':'STABLE']]
+    .map(([n,v])=>{const c=sc(String(v||''));return`<div class="sc2" style="background:${c}10;border-color:${c}30"><span class="sn">${n}</span><span style="font-size:9px;font-weight:700;color:${c}">${String(v||'-').toUpperCase()}</span></div>`;}).join('');
+  const heads=(d.top_headlines||[]).map(h=>`<div class="hli"><div class="hd"></div><div class="ht2">${h}</div></div>`).join('');
+  const riskHTML=risk.stop_loss_pct!=null?`<hr/><span class="sl">Risk Management</span><div class="row"><div class="rc" style="background:rgba(255,71,87,.07);border:1px solid rgba(255,71,87,.25)"><span style="font-size:10px;color:#6B89B4">STOP LOSS</span><span style="font-size:14px;font-weight:700;color:#FF4757">${risk.stop_loss_pct}%</span></div><div class="rc" style="background:rgba(0,212,160,.07);border:1px solid rgba(0,212,160,.25)"><span style="font-size:10px;color:#6B89B4">TARGET</span><span style="font-size:14px;font-weight:700;color:#00D4A0">${risk.target_pct}%</span></div></div><div class="adv">${risk.advice||''}</div><div style="font-size:10px;color:#3A5070;margin-top:8px">⏰ ${risk.time_exit||''}</div>`:`<div class="adv" style="margin-top:10px">${risk.note||''}</div>`;
+  document.getElementById('ROOT').innerHTML=`
+    <div class="ticker">${ticks}</div>
+    <div class="bias" style="background:${bbg(bias)};border-color:${color};box-shadow:0 8px 32px ${color}20">
+      <div class="bh"><div class="bi" style="background:${color}20">${be(bias)}</div><div class="bm">MARKET BIAS</div></div>
+      <div class="bl" style="color:${color}">${bias.toUpperCase()}</div>
+      <div class="bt2" style="color:${color}99">${bt(bias)}</div>
+      <div class="cr"><div class="cl">CONFIDENCE</div><div class="cv" style="color:${color}">${d.confidence}%</div></div>
+      <div class="ct"><div class="cf" id="CF" style="background:${color}"></div></div>
+    </div>
+    <div class="card"><span class="sl">Trade Setup</span>
+      <div class="row">
+        <div class="ib"><div class="il">INDEX</div><div class="iv" style="color:#4D8AF0">${d.index||'--'}</div></div>
+        <div class="ib" style="${st!=='Avoid'?`background:${sc2}12;border-color:${sc2}40`:''}"><div class="il">STRATEGY</div><div class="iv" style="color:${sc2}">${st}</div></div>
+      </div>
+      <div class="ib" style="margin-bottom:4px"><div class="il">STRIKE</div><div class="iv">${d.strike?.strike_label||'ATM'}</div></div>
+      <div style="font-size:10px;color:#3A5070;margin-top:4px;line-height:1.5">${d.strike?.note||''}</div>
+      ${riskHTML}
+    </div>
+    <div class="card"><span class="sl">Market Signals</span><div class="sg">${sigs}</div></div>
+    <div class="card"><span class="sl">Score Breakdown</span>
+      <div class="stk">
+        ${bull>0?`<div class="ss" style="flex:${bull};background:#00D4A0"></div>`:''}
+        ${side>0?`<div class="ss" style="flex:${side};background:#FFB300"></div>`:''}
+        ${bear>0?`<div class="ss" style="flex:${bear};background:#FF4757"></div>`:''}
+      </div>
+      <div class="sleg">
+        <div class="sl2"><div class="sd" style="background:#00D4A0"></div>BULL ${bull}pts</div>
+        <div class="sl2"><div class="sd" style="background:#FFB300"></div>SIDE ${side}pts</div>
+        <div class="sl2"><div class="sd" style="background:#FF4757"></div>BEAR ${bear}pts</div>
+      </div>
+    </div>
+    <div class="card"><span class="sl">AI Reasoning</span>
+      <div class="rb2">${d.reason||''}</div>
+      ${heads?`<span class="sl">Live Headlines</span><div class="hl">${heads}</div>`:''}
+    </div>
+    <div class="disc">⚠ FOR EDUCATIONAL USE ONLY. Not financial advice.<br/>Options trading involves substantial risk.</div>`;
+  setTimeout(()=>{const cf=document.getElementById('CF');if(cf)cf.style.width=d.confidence+'%';},100);
+}
+
+async function go(){
+  setLoad(true);
+  document.getElementById('ROOT').innerHTML='<div class="center"><div class="spinner"></div><div class="ltxt">Fetching live market data…</div><div class="lsub">NIFTY · BANK NIFTY · VIX · GLOBAL · NEWS</div></div>';
+  try{
+    const r=await fetch(API);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    if(d.bias)render(d);
+    else throw new Error('Invalid data');
+  }catch(e){
+    document.getElementById('ROOT').innerHTML=`<div class="center"><div style="font-size:40px">⛔</div><div style="font-size:16px;font-weight:700">Failed</div><div class="emsg">${e.message}</div><button class="rbt" onclick="go()">↻ Retry</button></div>`;
+  }
+  setLoad(false);
+}
+go();
+</script>
+</body>
+</html>
